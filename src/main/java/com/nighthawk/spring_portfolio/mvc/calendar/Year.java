@@ -10,7 +10,6 @@ class Year {
    private int year;
    private boolean isLeapYear;
    
-
    // zero argument constructor
    public Year() {} 
 
@@ -23,7 +22,6 @@ class Year {
       this.setIsLeapYear(year);
       this.firstDayOfYear(year);
    }
-
 
    /* isLeapYear getter/setters */
    public boolean getIsLeapYear(int year) {
@@ -41,8 +39,6 @@ class Year {
     public String toString() { 
       return isLeapYearToString(); 
    }
-
-
 
    /* firstDayOfYear getter/setters */
    public int getfirstDayOfYear(int year) {
@@ -63,8 +59,7 @@ class Year {
           y--;
       return (y + y / 4 - y / 100 + y / 400 + t[m - 1]+ d) % 7;
   }
-   
-      
+    
   /** Returns the value representing the day of the week 
    * 0 denotes Sunday, 
    * 1 denotes Monday, ..., 
