@@ -43,55 +43,18 @@ public class APCalendar {
      * dayOfYear(3, 1, 2017) returns 60, since 2017 is not a leap year
      * dayOfYear(3, 1, 2016) returns 61, since 2016 is a leap year. 
     */ 
-    private static int dayOfYear(int month, int day, int year) {
-        // implementation not shown
-        int day_number = 0;
-        if (isLeapYear(year)){
-            day_number +=1;
+    public static int dayOfYear(int month, int day, int year) {
+        // initializes dayValue as 0
+        int dayVal = 0;
+        for (int i = 1; i < month; i++) {
+            // Creates a yearmonth object for each month in the year
+            int monthDays = YearMonth.of(year, i).lengthOfMonth();
+            dayVal += monthDays;
         }
-
-        //jan
-        if (month ==1){
-            day_number = day_number + day;
+        //Adds the day of the incomplete month to dayVal
+        dayVal += day;
+        return dayVal;
         }
-        //feb
-        else if (month ==2){
-            day_number = day_number + (31 + day);
-        }
-        else if (month ==3){
-            day_number = day_number + (31 + 28 + day);
-        }
-        else if (month ==4){
-            day_number = day_number + (31 + 28 + 31+ day);
-        }
-        else if (month ==5){
-            day_number = day_number + (31 + 28 + 31+ 30 + day);
-        }
-        else if (month ==6){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ day);
-        }
-        else if (month ==7){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ 30 + day);
-        }
-        else if (month ==8){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ 30 + 31+ day);
-        }
-        else if (month ==9){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ 30 + 31+ 31 + day);
-        }
-        else if (month ==10){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ 30 + 31+ 31 + 30 + day);
-        }
-        else if (month ==11){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ 30 + 31+ 31 + 30 + 31 + day);
-        }
-        else if (month ==12){
-            day_number = day_number + (31 + 28 + 31+ +30 + 31+ 30 + 31+ 31 + 30 + 31 + 30 + day);
-        }
-
-
-        return day_number;
-    }
 
     /** Returns the number of leap years between year1 and year2, inclusive.
      * Precondition: 0 <= year1 <= year2
