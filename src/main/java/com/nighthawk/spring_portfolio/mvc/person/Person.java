@@ -75,10 +75,10 @@ public class Person {
     
 
     // Constructor used when building object from an API
-    public Person(String email, String password, String name, Date dob, int height, int weight) {
+    public Person(String name, String email, String password, Date dob, int height, int weight) {
+        this.name = name;
         this.email = email;
         this.password = password;
-        this.name = name;
         this.dob = dob;
         this.height = height;
         this.weight = weight;
@@ -111,9 +111,9 @@ public class Person {
     public static void main(String[] args) throws ParseException{
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date myDate = sdf.parse("2005-10-29");
-
-        Person allArgsPerson = new Person("kianpasokhi@gmail.com", "1234", "Kian Pasokhi", myDate, 67, 130 );
+        Person allArgsPerson = new Person("Kian", "Kianpasokhi@gmail.com", "Password123", myDate, 67, 130 );
         Person noArgsPerson = new Person();
+
         System.out.println(noArgsPerson);
         System.out.println(allArgsPerson);
     }
