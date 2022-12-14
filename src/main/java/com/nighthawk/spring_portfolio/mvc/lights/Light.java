@@ -1,4 +1,4 @@
-package com.nighthawk.spring_portfolio.mvc.lights;
+package com.nighthawk.spring_portfolio.mvc.lightboard;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +40,8 @@ public class Light {
     }
 
     /* Assign random colors and effects */
-    public Light() {
-        int maxColor = 255;
+    public Light(int r, int g, int b) {
+       //  int maxColor = 255;
         int effect = 9;
 
         //Randomly on or off
@@ -49,9 +49,9 @@ public class Light {
         this.on = a.nextBoolean();
 
         // Randomly assign colors and effects
-        this.red = (short) (Math.random()*(maxColor+1));
-        this.green = (short) (Math.random()*(maxColor+1));
-        this.blue = (short) (Math.random()*(maxColor+1));
+        this.red = (short) r;
+        this.green = (short) g;
+        this.blue = (short) b;
         this.effect = (short) (Math.random()*(effect+1));
     }
 
@@ -67,11 +67,11 @@ public class Light {
          );
     }
 
-    public void setRGB(short r, short g, short b) {
-        this.red = r;
-        this.green = g;
-        this.blue = b;
-    }
+    // public void setRGB(short r, short g, short b) {
+    //     this.red = r;
+    //     this.green = g;
+    //     this.blue = b;
+    // }
 
     /* toString output as key/values */
     public String toString() {
@@ -110,11 +110,9 @@ public class Light {
 
     static public void main(String[] args) {
         // create and display LightBoard
-        Light light = new Light();
+        Light light = new Light(12,253,17);
         System.out.println(light);  // use toString() method
     }
     
 
 }
-
-// Light.main(null);

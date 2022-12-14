@@ -1,4 +1,4 @@
-package com.nighthawk.spring_portfolio.mvc.lights;
+package com.nighthawk.spring_portfolio.mvc.lightboard;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,16 +31,6 @@ public class LightBoardAPI {
         return ResponseEntity.ok(json);
     }
 
-    @PostMapping("/setLight/{row}/{col}/{red}/{green}/{blue}")
-    public ResponseEntity<JsonNode> getLight(@PathVariable int row, @PathVariable int col, @PathVariable short red, @PathVariable short green, @PathVariable short blue) throws JsonMappingException, JsonProcessingException {
-        lightBoard.setColor(row, col, red, green, blue);
-
-        ObjectMapper mapper = new ObjectMapper(); 
-        json = mapper.readTree(lightBoard.toString()); 
-
-        return ResponseEntity.ok(json);
-    }
-
     @PostMapping("/allOn")
     public ResponseEntity<JsonNode> allOn() throws JsonMappingException, JsonProcessingException {
         lightBoard.allOn();
@@ -51,9 +41,9 @@ public class LightBoardAPI {
         return ResponseEntity.ok(json);
     }
 
-    @PostMapping("/toggleLight/{row}/{col}")
-    public ResponseEntity<JsonNode> getLight(@PathVariable int row, @PathVariable int col) throws JsonMappingException, JsonProcessingException {
-        lightBoard.lightToggle(row, col);
+    @PostMapping("/allOff")
+    public ResponseEntity<JsonNode> allOff() throws JsonMappingException, JsonProcessingException {
+        lightBoard.allOff();
 
         ObjectMapper mapper = new ObjectMapper(); 
         json = mapper.readTree(lightBoard.toString()); 
