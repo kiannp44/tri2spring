@@ -1,5 +1,8 @@
 package com.nighthawk.spring_portfolio.mvc.calendar;
 
+import java.util.ArrayList;
+import java.time.*;
+
 // Prototype Implementation
 
 public class APCalendar {
@@ -9,21 +12,19 @@ public class APCalendar {
      * isLeapYear(2016) returns True
      */          
     public static boolean isLeapYear(int year) {
-        if (year % 4 == 0){
+        // implementation not shown
+
+
+        if ((year % 4 == 0) && (year % 100 != 0) || (year % 400 == 0))
+        {
             return true;
         }
-
-        return false;
+        else 
+        {
+            return false; 
         }
-
-
-    static int dayofyear(int d, int m, int y){
-        int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
-        if (m < 3)
-            y--;
-        return (y + y / 4 - y / 100 + y / 400 + t[m - 1]+ d) % 7;
-    }
-     
+        
+        }
         
     /** Returns the value representing the day of the week 
      * 0 denotes Sunday, 
@@ -31,9 +32,17 @@ public class APCalendar {
      * 6 denotes Saturday. 
      * firstDayOfYear(2019) returns 2 for Tuesday.
     */
-    static int firstDayOfYear(int year) {
+    public static int firstDayOfYear(int year) {
+
+        LocalDateTime D = LocalDateTime.of(year, Month.JANUARY, 1, 0, 0);
+		// get Java day of week which is 1-7, where 1=Monday and 7=Sunday
+		int result = D.getDayOfWeek().getValue();
+		// adjust from 1-7 numbering (Mon->Sun) to 0-6 numbering (Sun->Sat) to meet AP Exam requirement
+		if(result == 7)
+			result = 0;
+		System.out.format("APCalendar firstDayOfYear: %d-%02d-%02d is day of year number %d%n", year, 1, 1, result);
+		return result;
         // implementation not shown
-        return dayofyear(1, 1, year);
         }
 
 
@@ -44,16 +53,7 @@ public class APCalendar {
      * dayOfYear(3, 1, 2016) returns 61, since 2016 is a leap year. 
     */ 
     public static int dayOfYear(int month, int day, int year) {
-        // initializes dayValue as 0
-        int dayVal = 0;
-        for (int i = 1; i < month; i++) {
-            // Creates a yearmonth object for each month in the year
-            int monthDays = YearMonth.of(year, i).lengthOfMonth();
-            dayVal += monthDays;
-        }
-        //Adds the day of the incomplete month to dayVal
-        dayVal += day;
-        return dayVal;
+        return (int) (Math.random() * (366 - 1)) + 1;
         }
 
     /** Returns the number of leap years between year1 and year2, inclusive.
@@ -61,32 +61,25 @@ public class APCalendar {
     */ 
     public static int numberOfLeapYears(int year1, int year2) {
          // to be implemented in part (a)
-    
-        int leap_counter = 0;
-        for (int i=0; i<=(year2-year1);i++){
-            if (isLeapYear(year1 + i)){
-                leap_counter +=1;
-            }
+         int count = 0;
+         for (int year = year1; year <= year2; year++)
+         {
+             if (isLeapYear(year))
+                 count++;
+         }
+ 
+         return count;
         }
-        return leap_counter;
-       
-        
-
-    }
 
     /** Returns the value representing the day of the week for the given date
      * Precondition: The date represented by month, day, year is a valid date.
     */
     public static int dayOfWeek(int month, int day, int year) { 
         // to be implemented in part (b)
-        int day_of_the_year = dayOfYear(month, day, year);
-        int remainder = day_of_the_year % 7;
-        int first_day = firstDayOfYear(year);
-        return first_day + remainder - 1;
+        int startDay = firstDayOfYear(year);
+		int dayOfWeek = dayOfYear(month, day, year);
+		return (startDay + dayOfWeek - 1) % 7;
         }
-
-
-        
 
     /** Tester method */
     public static void main(String[] args) {

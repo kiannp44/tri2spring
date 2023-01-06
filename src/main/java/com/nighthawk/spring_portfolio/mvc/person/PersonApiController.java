@@ -43,18 +43,6 @@ public class PersonApiController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);       
     }
 
-    @GetMapping("/getBmi/{id}")
-    public String getBmi(@PathVariable long id) {
-        Optional<Person> optional = repository.findById(id);
-        if (optional.isPresent()) {  // Good ID
-            Person person = optional.get();  // value from findByID
-            String bmiToString = person.getBmiToString();
-            return bmiToString;
-        }
-        // Bad ID
-        return "Error - Bad ID";       
-    }
-
     @GetMapping("/getAge/{id}")
     public String getAge(@PathVariable long id) {
         Optional<Person> optional = repository.findById(id);
@@ -64,8 +52,9 @@ public class PersonApiController {
             return ageToString;
         }
         // Bad ID
-        return "Error - Bad ID";       
+        return "Bad ID";       
     }
+
 
     /*
     DELETE individual Person using ID
@@ -91,7 +80,7 @@ public class PersonApiController {
                                              @RequestParam("name") String name,
                                              @RequestParam("dob") String dobString,
                                              @RequestParam("height") int height,
-                                             @RequestParam("weight") int weight) {
+                                             @RequestParam("weight") int weight){
         Date dob;
         try {
             dob = new SimpleDateFormat("MM-dd-yyyy").parse(dobString);
@@ -139,8 +128,12 @@ public class PersonApiController {
             }
 
             // Set Date and Attributes to SQL HashMap
-            Map<String, Map<String, Object>> date_map = new HashMap<>();
-            date_map.put( (String) stat_map.get("date"), attributeMap );
+            Map<String, Map<String, Object>> date_map = person.getStats();
+            if (date_map == null) {
+                date_map = new HashMap<>();
+            }
+
+            date_map.put((String) stat_map.get("date"), attributeMap );
             person.setStats(date_map);  // BUG, needs to be customized to replace if existing or append if new
             repository.save(person);  // conclude by writing the stats updates
 

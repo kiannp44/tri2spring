@@ -1,79 +1,63 @@
-package com.nighthawk.spring_portfolio.mvc.calendar;
-//import com.nighthawk.spring_portfolio.mvc.calendar.APCalendar.firstDayOfYear;
+package com.nighthawk.spring_portfolio.mvc.covid;
 
-/** Simple POJO 
- * Used to Interface with APCalendar
- * The toString method(s) prepares object for JSON serialization
- * Note... this is NOT an entity, just an abstraction
- */
-class Year {
-   private int year;
-   private boolean isLeapYear;
-   
-   // zero argument constructor
-   public Year() {} 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Date;
+import java.util.HashMap;
 
-   /* year getter/setters */
-   public int getYear() {
-      return year;
-   }
-   public void setYear(int year) {
-      this.year = year;
-      this.setIsLeapYear(year);
-      this.firstDayOfYear(year);
-   }
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-   /* isLeapYear getter/setters */
-   public boolean getIsLeapYear(int year) {
-      return APCalendar.isLeapYear(year);
-   }
-   private void setIsLeapYear(int year) {  // this is private to avoid tampering
-      this.isLeapYear = APCalendar.isLeapYear(year);
-   }
+@RestController // annotation to create a RESTful web services
+@RequestMapping("/api/covid")  //prefix of API
+public class CovidApiController {
+    private JSONObject body; //last run result
+    private HttpStatus status; //last run status
+    String last_run = null; //last run day of month
 
-   /* isLeapYearToString formatted to be mapped to JSON */
-   public String isLeapYearToString(){
-      return ( "{ \"year\": "  +this.year+  ", " + "\"isLeapYear\": "  +this.isLeapYear+ " }" );
-   }	
-    /* standard toString placeholder until class is extended */
-    public String toString() { 
-      return isLeapYearToString(); 
-   }
+    // GET Covid 19 Stats
+    @GetMapping("/daily")   //added to end of prefix as endpoint
+    public ResponseEntity<JSONObject> getCovid() {
 
-   /* firstDayOfYear getter/setters */
-   public int getfirstDayOfYear(int year) {
-      return APCalendar.firstDayOfYear(year);
-   }
-  
-   public String firstDayOfYearToString(){
-      return ( "{ \"year\": "  +this.year+  ", " + "\"firstDayOfYear\": "  +this.firstDayOfYear(year)+ " }" );
-   }	
+        //calls API once a day, sets body and status properties
+        String today = new Date().toString().substring(0,10); 
+        if (last_run == null || !today.equals(last_run))
+        {
+            try {  //APIs can fail (ie Internet or Service down)
+                
+                //RapidAPI header
+                HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://corona-virus-world-and-india-data.p.rapidapi.com/api"))
+                    .header("x-rapidapi-key", "dec069b877msh0d9d0827664078cp1a18fajsn2afac35ae063")
+                    .header("x-rapidapi-host", "corona-virus-world-and-india-data.p.rapidapi.com")
+                    .method("GET", HttpRequest.BodyPublishers.noBody())
+                    .build();
 
+                //RapidAPI request and response
+                HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
-   
-//MAKE SURE U DELETE THESE AFTER YOU FIGURE OUT HOW TO IMPORT FROM AP CALENDER!
+                //JSONParser extracts text body and parses to JSONObject
+                this.body = (JSONObject) new JSONParser().parse(response.body());
+                this.status = HttpStatus.OK;  //200 success
+                this.last_run = today;
+            }
+            catch (Exception e) {  //capture failure info
+                HashMap<String, String> status = new HashMap<>();
+                status.put("status", "RapidApi failure: " + e);
 
-   static int dayofyear(int d, int m, int y){
-      int t[] = { 0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
-      if (m < 3)
-          y--;
-      return (y + y / 4 - y / 100 + y / 400 + t[m - 1]+ d) % 7;
-  }
-    
-  /** Returns the value representing the day of the week 
-   * 0 denotes Sunday, 
-   * 1 denotes Monday, ..., 
-   * 6 denotes Saturday. 
-   * firstDayOfYear(2019) returns 2 for Tuesday.
-  */
-  public int firstDayOfYear(int year) {
-      // implementation not shown
-      return dayofyear(1, 1, year);
-     
-      }
-   public static void main(String[] args) {
-      Year year = new Year();
-      year.setYear(2022);
-      System.out.println(year);
-   }
+                //Setup object for error
+                this.body = (JSONObject) status;
+                this.status = HttpStatus.INTERNAL_SERVER_ERROR; //500 error
+                this.last_run = null;
+            }
+        }
+
+        //return JSONObject in RESTful style
+        return new ResponseEntity<>(body, status);
+    }
 }

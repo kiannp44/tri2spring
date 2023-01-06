@@ -14,12 +14,12 @@ public class CalculatorAPIController {
     @GetMapping("/calculate")
     public ResponseEntity<String> calculate(@RequestBody final String expression) {
         try {
-            Calculator calculatedExpression = new Calculator(expression);
-            return new ResponseEntity<>(calculatedExpression.toString(), HttpStatus.ACCEPTED);
+            Calculator calculating = new Calculator(expression);
+            return new ResponseEntity<>(calculating.toString(), HttpStatus.ACCEPTED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Internal Error/Parsing Error, check your expression", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("ERROR", HttpStatus.BAD_REQUEST);
         }
     }
 }

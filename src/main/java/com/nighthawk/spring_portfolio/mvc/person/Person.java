@@ -1,7 +1,5 @@
 package com.nighthawk.spring_portfolio.mvc.person;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -29,6 +27,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.text.ParseException;  
+import java.text.SimpleDateFormat;  
+
+
 /*
 Person is a POJO, Plain Old Java Object.
 First set of annotations add functionality to POJO
@@ -43,10 +45,12 @@ The last annotation connect to database
 @TypeDef(name="json", typeClass = JsonType.class)
 public class Person {
     
+    // automatic unique identifier for Person record
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    // email, password, roles are key attributes to login and authentication
     @NotEmpty
     @Size(min=5)
     @Column(unique=true)
@@ -56,6 +60,13 @@ public class Person {
     @NotEmpty
     private String password;
 
+    @Column(unique=false)
+    private int height;
+
+    @Column(unique=false)
+    private int weight;
+
+    // @NonNull, etc placed in params of constructor: "@NonNull @Size(min = 2, max = 30, message = "Name (2 to 30 chars)") String name"
     @NonNull
     @Size(min = 2, max = 30, message = "Name (2 to 30 chars)")
     private String name;
@@ -63,59 +74,56 @@ public class Person {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
     
-    @Column(unique=false)
-    private int height;
 
-    @Column(unique=false)
-    private int weight;
-
+    /* HashMap is used to store JSON for daily "stats"
+    "stats": {
+        "2022-11-13": {
+            "calories": 2200,
+            "steps": 8000
+        }
+    }
+    */
     @Type(type="json")
     @Column(columnDefinition = "jsonb")
     private Map<String,Map<String, Object>> stats = new HashMap<>(); 
     
 
     // Constructor used when building object from an API
-    public Person(String name, String email, String password, Date dob, int height, int weight) {
-        this.name = name;
+    public Person(String email, String password, String name, Date dob, int height, int weight) {
         this.email = email;
         this.password = password;
+        this.name = name;
         this.dob = dob;
-        this.height = height;
-        this.weight = weight;
+        this.height= height; 
+        this.weight= weight; 
     }
 
-    public String toString(){
-        return ("{ \"email\": " + this.email + ", " + "\"password\": " + this.password + ", " + "\"name\": " + this.name + ", " + "\"dob\": " + this.dob + " }" );
-    }
-
+    // A custom getter to return age from dob attribute
     public int getAge() {
         if (this.dob != null) {
             LocalDate birthDay = this.dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             return Period.between(birthDay, LocalDate.now()).getYears(); }
         return -1;
-    }
 
+    }
     public String getAgeToString(){
-        return ("{ \"name\": " + this.name + " ," + "\"age\": " + this.getAge() + " }" );
-    }
-
-    public int getBmi(){
-        int bmi = (int) ( 703 * this.weight / Math.pow(this.height, 2) );
-        return bmi;
-    }
-
-    public String getBmiToString(){
-        return ("{ \"name\": " + this.name + " ," + "\"bmi\": " + this.getBmi() + " }" );
+        return ("\"age\": " + this.getAge() + " }" );
     }
 
     public static void main(String[] args) throws ParseException{
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date myDate = sdf.parse("2005-10-29");
-        Person allArgsPerson = new Person("Kian", "Kianpasokhi@gmail.com", "Password123", myDate, 67, 130 );
+
+        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");   
+        Date myDate = formatter.parse("01/20/2001");  
+
+        Person allArgsPerson = new Person("ellier@gmail.com", "54321", "Ellie Rozenkrants", myDate, 72, 110 );
         Person noArgsPerson = new Person();
 
         System.out.println(noArgsPerson);
         System.out.println(allArgsPerson);
+    }
+
+    public String toString(){
+        return ("{ \"email\": " + this.email + ", " + "\"password\": " + this.password + ", " + "\"name\": " + this.name + ", " + "\"dob\": " + this.dob +  "\"height\": " + this.height + "," + "\"weight\": " + this.weight+ "}" );
     }
 
 }
